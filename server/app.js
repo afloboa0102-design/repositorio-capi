@@ -1,16 +1,21 @@
-import express from 'express'
-import cors from 'cors'
-import helmet from 'helmet'
-import pingRoutes from './routes/ping.js'
+import express from "express";
+import cors from "cors";
 
-const app = express()
+import healthRouter from "./routes/health.js";
+import itemsRouter from "./routes/items.js";
 
-// Apply common middleware
-app.use(cors())
-app.use(helmet())
-app.use(express.json())
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-// Mount API routes under the /api prefix
-app.use('/api', pingRoutes)
+// Rutas (endpoint = URL que responde datos)
+app.use("/api/ping", healthRouter);
+app.use("/api/items", itemsRouter);
 
-export default app
+// Manejo de errores (middleware = filtro)
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ ok: false, error: "Error del servidor" });
+});
+
+export default app;
